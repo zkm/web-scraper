@@ -30,7 +30,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["axios", "npm:1.13.2"],\
             ["cheerio", "npm:1.1.2"],\
-            ["express", "npm:5.1.0"]\
+            ["express", "npm:5.2.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -448,10 +448,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["express", [\
-        ["npm:5.1.0", {\
-          "packageLocation": "./.yarn/cache/express-npm-5.1.0-e44442bf7d-06e6141780.zip/node_modules/express/",\
+        ["npm:5.2.1", {\
+          "packageLocation": "./.yarn/cache/express-npm-5.2.1-d1e97b99e1-e0bc9c11fc.zip/node_modules/express/",\
           "packageDependencies": [\
-            ["express", "npm:5.1.0"],\
+            ["express", "npm:5.2.1"],\
             ["accepts", "npm:2.0.0"],\
             ["body-parser", "npm:2.2.1"],\
             ["content-disposition", "npm:1.0.1"],\
@@ -459,6 +459,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cookie", "npm:0.7.2"],\
             ["cookie-signature", "npm:1.2.2"],\
             ["debug", "virtual:79691d0c2acc36a90db65e29df3260804bc6dbae4d0383e5aa99e42134a08bb3c71f0eb74bbfe41a6ea83a24046391c8e43ae628ae2e6ea98331d2c42c76dc03#npm:4.4.3"],\
+            ["depd", "npm:2.0.0"],\
             ["encodeurl", "npm:2.0.0"],\
             ["escape-html", "npm:1.0.3"],\
             ["etag", "npm:1.8.1"],\
@@ -1132,7 +1133,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["web-scraper", "workspace:."],\
             ["axios", "npm:1.13.2"],\
             ["cheerio", "npm:1.1.2"],\
-            ["express", "npm:5.1.0"]\
+            ["express", "npm:5.2.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

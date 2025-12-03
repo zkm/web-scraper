@@ -5,7 +5,7 @@ const express = require("express");
 
 const app = express();
 
-const url = "https://www.aol.com/news";
+const url = "https://news.ycombinator.com/";
 
 async function scrapeArticles(url) {
   const response = await axios(url);
@@ -13,10 +13,12 @@ async function scrapeArticles(url) {
   const $ = cheerio.load(html);
   const articles = [];
 
-  $(".ntk-stream-item", html).each(function () {
-    const title = $(this).find(".ntk-list-item-title").text();
-    const url = $(this).attr("href");
+  $(".athing").each(function () {
+    const title = $(this).find(".titleline > a").text();
+    const url = $(this).find(".titleline > a").attr("href");
+    const rank = $(this).find(".rank").text();
     articles.push({
+      rank,
       title,
       url,
     });
@@ -35,4 +37,22 @@ app.get("/articles", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`server running on PORT ${PORT}`));
+app.get("/debug", async (req, res) => {
+  try {
+    const response = await axios(url);
+    const html = response.data;
+    res.type('html').send(html);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT}`);
+  console.log(`View articles at: http://localhost:${PORT}/articles`);
+  console.log(`Debug HTML at: http://localhost:${PORT}/debug`);
+});
+
+module.exports = { scrapeArticles };
+

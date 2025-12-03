@@ -1,33 +1,98 @@
 # Web Scraper
 
-This is a Node.js project that demonstrates how to use the `axios` and `cheerio` packages to scrape data from a website. It also uses the `express` package to create a simple web server that displays the scraped data.
+A Node.js web scraper that extracts news articles from AOL News. Built with Express, Axios, and Cheerio.
+
+## Features
+
+- Express REST API server
+- Web scraping with Cheerio
+- JSON API endpoint for articles
+- Jest testing suite
 
 ## Prerequisites
 
-Before you can run this project, you will need to have the following installed:
-
-*   Node.js (version 14 or later)
+- Node.js (version 14 or later)
+- Yarn or npm
 
 ## Installation
 
-To install the dependencies for this project, run the following command in your terminal:
+Install the dependencies:
 
-Copy code
+```bash
+yarn install
+```
 
-`npm install`
+or
+
+```bash
+npm install
+```
 
 ## Usage
 
-To run the web scraper, use the following command:
+### Development
 
-Copy code
+Start the development server:
 
-`node index.js`
+```bash
+yarn dev
+```
 
-This will start the web server and begin scraping data from the website.
+or
 
-To view the scraped data, open your web browser and go to [http://localhost:8000/articles](http://localhost:8000/articles).
+```bash
+npm run dev
+```
+
+The server will start on port 8000.
+
+### API Endpoint
+
+Visit [http://localhost:8000/articles](http://localhost:8000/articles) to retrieve scraped articles in JSON format.
+
+**Response format:**
+```json
+[
+  {
+    "title": "Article Title",
+    "url": "https://example.com/article"
+  }
+]
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+yarn test
+```
+
+or
+
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+├── index.js          # Main application file
+├── index.test.js     # Jest tests
+├── package.json      # Dependencies and scripts
+└── README.md         # This file
+```
+
+## Dependencies
+
+- **express** - Web framework
+- **axios** - HTTP client for making requests
+- **cheerio** - jQuery-like HTML parsing
+
+## Dev Dependencies
+
+- **jest** - Testing framework
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.

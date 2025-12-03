@@ -68,6 +68,18 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
+# Yarn v2+ (Berry)
+# Ignore the Yarn cache while keeping plugins/releases tracked
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Yarn PnP artifacts
+.pnp.*
+
 # dotenv environment variables file
 .env
 .env.test

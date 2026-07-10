@@ -1,4 +1,5 @@
 const axios = require("axios");
+const request = require("supertest");
 
 jest.mock("axios");
 
@@ -85,5 +86,110 @@ describe("scrapeArticles", () => {
     await expect(
       scrapeArticles("https://news.ycombinator.com/")
     ).rejects.toThrow("Network error");
+  });
+});
+
+describe("getArticles", () => {
+  let getArticles;
+  let axiosMock;
+
+  beforeEach(() => {
+    jest.resetModules();
+    axiosMock = require("axios");
+    axiosMock.mockResolvedValue({ data: mockHTML });
+    ({ getArticles } = require("./index"));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("fetches articles and returns cached: false on first call", async () => {
+    const result = await getArticles();
+
+    expect(result.cached).toBe(false);
+    expect(result.articles).toHaveLength(2);
+    expect(typeof result.fetchedAt).toBe("number");
+  });
+
+  it("serves cached articles within TTL without re-fetching", async () => {
+    await getArticles();
+    axiosMock.mockClear();
+
+    const result = await getArticles();
+
+    expect(result.cached).toBe(true);
+    expect(axiosMock).not.toHaveBeenCalled();
+  });
+
+  it("re-fetches when the TTL has expired", async () => {
+    const base = 1_000_000;
+    jest.spyOn(Date, "now").mockReturnValue(base);
+    await getArticles();
+    axiosMock.mockClear();
+
+    jest.spyOn(Date, "now").mockReturnValue(base + 61_000);
+    const result = await getArticles();
+
+    expect(result.cached).toBe(false);
+    expect(axiosMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("bypasses cache when refresh=true", async () => {
+    await getArticles();
+    axiosMock.mockClear();
+
+    const result = await getArticles({ refresh: true });
+
+    expect(result.cached).toBe(false);
+    expect(axiosMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("GET /api/articles", () => {
+  let app;
+  let axiosMock;
+
+  beforeEach(() => {
+    jest.resetModules();
+    axiosMock = require("axios");
+    axiosMock.mockResolvedValue({ data: mockHTML });
+    ({ app } = require("./index"));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("returns 200 with the expected response envelope", async () => {
+    const res = await request(app).get("/api/articles");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      source: "https://news.ycombinator.com/",
+      cached: expect.any(Boolean),
+      count: 2,
+      fetchedAt: expect.any(Number),
+      articles: expect.any(Array),
+    });
+    expect(res.body.articles).toHaveLength(2);
+  });
+
+  it("returns cached: false when refresh=true is passed", async () => {
+    await request(app).get("/api/articles");
+
+    const res = await request(app).get("/api/articles?refresh=true");
+
+    expect(res.status).toBe(200);
+    expect(res.body.cached).toBe(false);
+  });
+
+  it("returns 500 with error message on scrape failure", async () => {
+    axiosMock.mockRejectedValue(new Error("Upstream error"));
+
+    const res = await request(app).get("/api/articles");
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: "Failed to fetch articles" });
   });
 });

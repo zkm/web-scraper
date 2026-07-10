@@ -46,7 +46,11 @@ let cache = { articles: null, fetchedAt: 0 };
 async function getArticles({ refresh = false } = {}) {
   const now = Date.now();
   if (!refresh && cache.articles && now - cache.fetchedAt < CACHE_TTL_MS) {
-    return { articles: cache.articles, fetchedAt: cache.fetchedAt, cached: true };
+    return {
+      articles: cache.articles,
+      fetchedAt: cache.fetchedAt,
+      cached: true,
+    };
   }
   const articles = await scrapeArticles(HN_URL);
   cache = { articles, fetchedAt: now };
@@ -57,7 +61,13 @@ app.get("/api/articles", async (req, res) => {
   try {
     const refresh = req.query.refresh === "true";
     const { articles, fetchedAt, cached } = await getArticles({ refresh });
-    res.json({ source: HN_URL, fetchedAt, cached, count: articles.length, articles });
+    res.json({
+      source: HN_URL,
+      fetchedAt,
+      cached,
+      count: articles.length,
+      articles,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch articles" });

@@ -10,20 +10,26 @@ const retryBtn = document.getElementById("retry");
 let articles = [];
 
 /* Theme: respect system preference, allow manual override persisted in localStorage */
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  themeBtn.textContent = theme === "dark" ? "☀️" : "🌙";
+function resolveInitialTheme(storage, prefersDark) {
+  return storage.getItem("theme") || (prefersDark ? "dark" : "light");
 }
 
-const savedTheme =
-  localStorage.getItem("theme") ||
-  (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-applyTheme(savedTheme);
+function applyTheme(theme, root, button) {
+  root.dataset.theme = theme;
+  button.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+const savedTheme = resolveInitialTheme(
+  localStorage,
+  matchMedia("(prefers-color-scheme: dark)").matches,
+);
+applyTheme(savedTheme, document.documentElement, themeBtn);
 
 themeBtn.addEventListener("click", () => {
-  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  const next =
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   localStorage.setItem("theme", next);
-  applyTheme(next);
+  applyTheme(next, document.documentElement, themeBtn);
 });
 
 /* Rendering */
@@ -34,21 +40,24 @@ function escapeHTML(str) {
 }
 
 function renderSkeletons(count = 12) {
-  grid.innerHTML = Array.from({ length: count }, () =>
-    `<article class="card skeleton">
+  grid.innerHTML = Array.from(
+    { length: count },
+    () =>
+      `<article class="card skeleton">
       <div class="line short"></div>
       <div class="line tall"></div>
       <div class="line"></div>
       <div class="line short"></div>
-    </article>`
+    </article>`,
   ).join("");
 }
 
 function articleCard(a) {
   const hnLink = a.id ? `https://news.ycombinator.com/item?id=${a.id}` : null;
-  const rawHref = a.url && a.url.startsWith("item?")
-    ? `https://news.ycombinator.com/${a.url}`
-    : a.url;
+  const rawHref =
+    a.url && a.url.startsWith("item?")
+      ? `https://news.ycombinator.com/${a.url}`
+      : a.url;
   const href = rawHref && /^https?:\/\//i.test(rawHref) ? rawHref : "#";
   return `<article class="card">
     <div class="card-top">
@@ -60,9 +69,11 @@ function articleCard(a) {
     </h2>
     <div class="card-meta">
       <span>▲ ${a.points ?? 0} points</span>
-      ${hnLink
-        ? `<a href="${hnLink}" target="_blank" rel="noopener">💬 ${a.comments ?? 0} comments</a>`
-        : `<span>💬 ${a.comments ?? 0} comments</span>`}
+      ${
+        hnLink
+          ? `<a href="${hnLink}" target="_blank" rel="noopener">💬 ${a.comments ?? 0} comments</a>`
+          : `<span>💬 ${a.comments ?? 0} comments</span>`
+      }
       ${a.author ? `<span>by ${escapeHTML(a.author)}</span>` : ""}
       ${a.age ? `<span>${escapeHTML(a.age)}</span>` : ""}
     </div>
@@ -78,7 +89,7 @@ function render() {
       !query ||
       (a.title || "").toLowerCase().includes(query) ||
       (a.domain || "").toLowerCase().includes(query) ||
-      (a.author || "").toLowerCase().includes(query)
+      (a.author || "").toLowerCase().includes(query),
   );
 
   visible = [...visible].sort((a, b) => {
@@ -120,7 +131,7 @@ async function load({ refresh: _refresh = false } = {}) {
 
   try {
     const res = await fetch(
-      "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30"
+      "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30",
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -154,3 +165,7 @@ refreshBtn.addEventListener("click", () => load({ refresh: true }));
 retryBtn.addEventListener("click", () => load({ refresh: true }));
 
 load();
+
+if (typeof module !== "undefined") {
+  module.exports = { resolveInitialTheme, applyTheme };
+}

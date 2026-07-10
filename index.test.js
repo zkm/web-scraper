@@ -84,7 +84,7 @@ describe("scrapeArticles", () => {
     axios.mockRejectedValue(new Error("Network error"));
 
     await expect(
-      scrapeArticles("https://news.ycombinator.com/")
+      scrapeArticles("https://news.ycombinator.com/"),
     ).rejects.toThrow("Network error");
   });
 });
@@ -185,11 +185,82 @@ describe("GET /api/articles", () => {
   });
 
   it("returns 500 with error message on scrape failure", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
     axiosMock.mockRejectedValue(new Error("Upstream error"));
 
     const res = await request(app).get("/api/articles");
 
     expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: "Failed to fetch articles" });
+  });
+});
+
+describe("GET /articles (legacy)", () => {
+  let app;
+  let axiosMock;
+
+  beforeEach(() => {
+    jest.resetModules();
+    axiosMock = require("axios");
+    axiosMock.mockResolvedValue({ data: mockHTML });
+    ({ app } = require("./index"));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("returns 200 with a plain array of articles", async () => {
+    const res = await request(app).get("/articles");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toHaveLength(2);
+    expect(res.body[0]).toMatchObject({ id: "101", title: "Test Article 1" });
+  });
+
+  it("returns 500 with a plain text error on scrape failure", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    axiosMock.mockRejectedValue(new Error("Upstream error"));
+
+    const res = await request(app).get("/articles");
+
+    expect(res.status).toBe(500);
+    expect(res.text).toBe("Internal server error");
+  });
+});
+
+describe("GET /debug", () => {
+  let app;
+  let axiosMock;
+
+  beforeEach(() => {
+    jest.resetModules();
+    axiosMock = require("axios");
+    ({ app } = require("./index"));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("returns 200 with the raw HTML of the scraped page", async () => {
+    axiosMock.mockResolvedValue({ data: mockHTML });
+
+    const res = await request(app).get("/debug");
+
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/html/);
+    expect(res.text).toBe(mockHTML);
+  });
+
+  it("returns 500 with a plain text error when the upstream request fails", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    axiosMock.mockRejectedValue(new Error("Upstream error"));
+
+    const res = await request(app).get("/debug");
+
+    expect(res.status).toBe(500);
+    expect(res.text).toBe("Internal server error");
   });
 });

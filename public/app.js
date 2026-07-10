@@ -93,19 +93,52 @@ function render() {
 }
 
 /* Data */
-async function load({ refresh = false } = {}) {
+function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - date) / 1000);
+  if (seconds < 60) return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} day${days !== 1 ? "s" : ""} ago`;
+}
+
+function domainFromUrl(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+async function load({ refresh: _refresh = false } = {}) {
   errorEl.hidden = true;
   grid.hidden = false;
   statusEl.textContent = "Loading…";
   renderSkeletons();
 
   try {
-    const res = await fetch(`/api/articles${refresh ? "?refresh=true" : ""}`);
+    const res = await fetch(
+      "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=30"
+    );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    articles = data.articles;
-    const when = new Date(data.fetchedAt).toLocaleTimeString();
-    statusEl.textContent = `${data.count} articles · updated ${when}${data.cached ? " (cached)" : ""}`;
+
+    articles = data.hits.map((hit, i) => ({
+      rank: i + 1,
+      id: hit.objectID,
+      url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
+      domain: hit.url ? domainFromUrl(hit.url) : null,
+      title: hit.title,
+      points: hit.points ?? 0,
+      comments: hit.num_comments ?? 0,
+      author: hit.author,
+      age: timeAgo(new Date(hit.created_at)),
+    }));
+
+    const when = new Date().toLocaleTimeString();
+    statusEl.textContent = `${articles.length} articles · updated ${when}`;
     render();
   } catch (err) {
     console.error(err);

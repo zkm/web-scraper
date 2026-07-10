@@ -1,97 +1,110 @@
 # Web Scraper
 
-A Node.js web scraper that extracts news articles from AOL News. Built with Express, Axios, and Cheerio.
+A Node.js web scraper that extracts front-page articles from [Hacker News](https://news.ycombinator.com/) and serves them through a JSON API **and a modern, responsive web UI**. Built with Express, Axios, and Cheerio — no build step required.
 
 ## Features
 
-- Express REST API server
-- Web scraping with Cheerio
-- JSON API endpoint for articles
-- Jest testing suite
+- 📰 **Responsive web UI** — card grid layout that adapts from phone to desktop
+- 🌙 **Dark / light theme** — follows your system preference, with a manual toggle persisted across visits
+- 🔎 **Instant search** — filter articles by title, domain, or author as you type
+- ↕️ **Sorting** — by rank, points, or comment count
+- 💀 **Skeleton loading states** and graceful error handling with retry
+- 📊 **Rich article metadata** — rank, title, URL, domain, points, author, age, and comment count
+- ⚡ **In-memory caching** (60s TTL) so repeated requests don't hammer the source site
+- 🧪 Jest test suite against the exported scraper function
 
 ## Prerequisites
 
-- Node.js (version 14 or later)
+- Node.js 18 or later
 - Yarn or npm
 
 ## Installation
 
-Install the dependencies:
-
 ```bash
 yarn install
-```
-
-or
-
-```bash
+# or
 npm install
 ```
 
 ## Usage
 
-### Development
+Start the server:
 
-Start the development server:
+```bash
+yarn start
+```
+
+Or with auto-reload during development (uses Node's built-in `--watch`):
 
 ```bash
 yarn dev
 ```
 
-or
+Then open [http://localhost:8000](http://localhost:8000) for the web UI. The port can be overridden with the `PORT` environment variable.
 
-```bash
-npm run dev
-```
+### API Endpoints
 
-The server will start on port 8000.
+| Endpoint | Description |
+| --- | --- |
+| `GET /` | Responsive web UI |
+| `GET /api/articles` | Articles with metadata, wrapped in an envelope (`?refresh=true` bypasses the cache) |
+| `GET /articles` | Legacy endpoint — plain array of articles |
+| `GET /debug` | Raw HTML of the scraped page |
 
-### API Endpoint
+**`/api/articles` response format:**
 
-Visit [http://localhost:8000/articles](http://localhost:8000/articles) to retrieve scraped articles in JSON format.
-
-**Response format:**
 ```json
-[
-  {
-    "title": "Article Title",
-    "url": "https://example.com/article"
-  }
-]
+{
+  "source": "https://news.ycombinator.com/",
+  "fetchedAt": 1752148800000,
+  "cached": false,
+  "count": 30,
+  "articles": [
+    {
+      "id": "101",
+      "rank": 1,
+      "title": "Article Title",
+      "url": "https://example.com/article",
+      "domain": "example.com",
+      "points": 142,
+      "author": "alice",
+      "age": "3 hours ago",
+      "comments": 87
+    }
+  ]
+}
 ```
 
 ## Testing
 
-Run the test suite:
-
 ```bash
 yarn test
-```
-
-or
-
-```bash
+# or
 npm test
 ```
 
 ## Project Structure
 
 ```
-├── index.js          # Main application file
-├── index.test.js     # Jest tests
-├── package.json      # Dependencies and scripts
-└── README.md         # This file
+├── index.js            # Express server + scraper
+├── index.test.js       # Jest tests
+├── public/
+│   ├── index.html      # Web UI markup
+│   ├── styles.css      # Responsive styles (CSS grid, custom properties, dark mode)
+│   └── app.js          # UI logic (fetch, search, sort, theme)
+├── package.json        # Dependencies and scripts
+└── README.md           # This file
 ```
 
 ## Dependencies
 
-- **express** - Web framework
-- **axios** - HTTP client for making requests
-- **cheerio** - jQuery-like HTML parsing
+- **express** — Web framework and static file serving
+- **axios** — HTTP client for making requests
+- **cheerio** — jQuery-like HTML parsing
 
 ## Dev Dependencies
 
-- **jest** - Testing framework
+- **jest** — Testing framework
 
 ## License
 

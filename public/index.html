@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A modern, responsive front page for scraped Hacker News articles" />
+  <title>HN Scraper</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📰</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1 class="brand"><span class="brand-mark">📰</span> HN Scraper</h1>
+      <div class="controls">
+        <input id="search" class="search" type="search" placeholder="Filter articles…" autocomplete="off" aria-label="Filter articles" />
+        <select id="sort" class="select" aria-label="Sort articles">
+          <option value="rank">Rank</option>
+          <option value="points">Points</option>
+          <option value="comments">Comments</option>
+        </select>
+        <button id="refresh" class="btn" type="button" title="Refresh articles" aria-label="Refresh articles">⟳</button>
+        <button id="theme" class="btn" type="button" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <p id="status" class="status" role="status"></p>
+    <div id="error" class="error" hidden>
+      <p>Couldn’t load articles.</p>
+      <button id="retry" class="btn btn-primary" type="button">Try again</button>
+    </div>
+    <section id="grid" class="grid" aria-live="polite"></section>
+  </main>
+
+  <footer class="footer">
+    Scraped from <a href="https://news.ycombinator.com" target="_blank" rel="noopener">news.ycombinator.com</a>
+    · Built with Express + Cheerio
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

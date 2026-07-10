@@ -46,14 +46,17 @@ function renderSkeletons(count = 12) {
 
 function articleCard(a) {
   const hnLink = a.id ? `https://news.ycombinator.com/item?id=${a.id}` : null;
-  const href = a.url && a.url.startsWith("item?") ? `https://news.ycombinator.com/${a.url}` : a.url;
+  const rawHref = a.url && a.url.startsWith("item?")
+    ? `https://news.ycombinator.com/${a.url}`
+    : a.url;
+  const href = rawHref && /^https?:\/\//i.test(rawHref) ? rawHref : "#";
   return `<article class="card">
     <div class="card-top">
       <span class="rank">#${a.rank ?? "–"}</span>
       ${a.domain ? `<span class="domain">${escapeHTML(a.domain)}</span>` : ""}
     </div>
     <h2 class="card-title">
-      <a href="${escapeHTML(href || "#")}" target="_blank" rel="noopener">${escapeHTML(a.title)}</a>
+      <a href="${escapeHTML(href)}" target="_blank" rel="noopener">${escapeHTML(a.title)}</a>
     </h2>
     <div class="card-meta">
       <span>▲ ${a.points ?? 0} points</span>

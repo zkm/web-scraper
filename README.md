@@ -1,5 +1,16 @@
 # Web Scraper
 
+[![Deploy to GitHub Pages](https://github.com/zkm/web-scraper/actions/workflows/deploy.yml/badge.svg)](https://github.com/zkm/web-scraper/actions/workflows/deploy.yml)
+[![live demo](https://img.shields.io/website?url=https%3A%2F%2Fzkm.github.io%2Fweb-scraper%2F&label=live%20demo)](https://zkm.github.io/web-scraper/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
+![Express 5](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
+![Cheerio](https://img.shields.io/badge/Cheerio-E88C1F)
+![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=black)
+![Data: Hacker News](https://img.shields.io/badge/data-Hacker%20News-FF6600?logo=ycombinator&logoColor=white)
+
 A Node.js web scraper that extracts front-page articles from [Hacker News](https://news.ycombinator.com/) and serves them through a JSON API **and a modern, responsive web UI**. Built with Express, Axios, and Cheerio — no build step required.
 
 ## Features

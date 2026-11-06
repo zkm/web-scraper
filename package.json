@@ -31,9 +31,9 @@
     "supertest": "^7.2.2"
   },
   "resolutions": {
-    "undici": "^7.29.1",
+    "undici": "^7.30.2",
     "form-data": "^4.0.6",
-    "ip-address": "^10.7.1",
+    "ip-address": "^10.7.6",
     "qs": "^6.17.1",
     "tar": "^7.5.21",
     "@istanbuljs/load-nyc-config/js-yaml": "^4.3.1",
